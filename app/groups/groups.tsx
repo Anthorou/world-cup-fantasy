@@ -45,8 +45,8 @@ export function Groups(): React.ReactNode {
 									);
 
 									return (
-										<div key={team.teamId} className="flex items-center justify-between rounded-lg bg-slate-800 px-3 py-2">
-											<div className="flex items-center gap-3">
+										<div key={team.teamId} className="flex min-w-0 items-center justify-between gap-2 rounded-lg bg-slate-800 px-3 py-2">
+											<div className="flex min-w-0 items-center gap-2">
 												<span className="text-sm text-slate-400">
 													{team.rank}
 												</span>
@@ -54,20 +54,20 @@ export function Groups(): React.ReactNode {
 													<img
 														src={player.avatar}
 														alt={player.name}
-														className="h-6 w-6 rounded-full object-cover"
+														className="h-6 w-6 shrink-0 rounded-full object-cover"
 													/>
 												}
 												<img
 													src={team.logo}
 													alt={team.teamName}
-													className="h-6 w-6 object-contain"
+													className="h-6 w-6 shrink-0 object-contain"
 												/>
-												<span className="font-medium">
+												<span className="min-w-0 truncate font-medium">
 													{team.teamName}
 												</span>
 											</div>
-											<div className="flex items-center gap-4">
-												<div className="flex items-center gap-2 text-sm text-slate-400">
+											<div className="shrink-0 flex items-center gap-2">
+												<div className="flex items-center gap-1 text-xs text-slate-400 sm:text-sm sm:gap-2">
 													<span>{team.wins}W</span>
 													<span>{team.draws}D</span>
 													<span>{team.losses}L</span>
