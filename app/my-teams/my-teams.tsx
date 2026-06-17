@@ -1,5 +1,6 @@
 "use client";
 
+import { LastRefreshed } from "../components/LastRefreshed";
 import { useApp } from "../contexts/worldCupContext";
 import { teams } from "../data/pool";
 
@@ -48,6 +49,9 @@ export function MyTeams(): React.ReactNode {
 						</div>
 					</div>
 				))}
+			</div>
+			<div>
+				<LastRefreshed />
 			</div>
 		</section>
 	);

@@ -27,7 +27,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const data = await getWorldCupStandings();
+  const { data, fetchedAt } = await getWorldCupStandings();
 
   const standings = flattenStandings(data);
   
@@ -37,7 +37,7 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <AppProvider standings={standings}>
+        <AppProvider standings={standings} lastRefreshed={fetchedAt}>
           <AppShell>
             <RequirePlayer>{children}</RequirePlayer>
           </AppShell>

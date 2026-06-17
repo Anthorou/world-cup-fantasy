@@ -1,5 +1,6 @@
 "use client";
 
+import { LastRefreshed } from "../components/LastRefreshed";
 import { useApp } from "../contexts/worldCupContext";
 import { players, teams } from "../data/pool";
 
@@ -83,6 +84,9 @@ export function Groups(): React.ReactNode {
 						</div>
 					</div>
 				))}
+			</div>
+			<div>
+				<LastRefreshed />
 			</div>
 		</section>
 	);

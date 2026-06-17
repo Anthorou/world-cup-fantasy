@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { ApiTeamStanding } from "../types/pool";
 
 export function flattenStandings(data: any): ApiTeamStanding[] {
@@ -16,18 +17,27 @@ export function flattenStandings(data: any): ApiTeamStanding[] {
 		}));
 }
 
-export async function getWorldCupStandings() {
-	const reponse = await fetch(
-		"https://v3.football.api-sports.io/standings?league=1&season=2026",
-		{
-			headers: {
-				"x-apisports-key": process.env.API_FOOTBALL_KEY ?? ""
-			},
-			next: {
-				revalidate: 900
-			}
-		}
-	);
+export const getWorldCupStandings = unstable_cache(
+    async () => {
+        const response = await fetch(
+            "https://v3.football.api-sports.io/standings?league=1&season=2026",
+            {
+                headers: {
+                    "x-apisports-key": process.env.API_FOOTBALL_KEY ?? "",
+                },
+                cache: "no-store",
+            }
+        );
 
-	return reponse.json();
-}
+        const data = await response.json();
+
+        return {
+            data,
+            fetchedAt: new Date().toISOString(),
+        };
+    },
+    ["world-cup-standings"],
+    {
+        revalidate: 300,
+    }
+);

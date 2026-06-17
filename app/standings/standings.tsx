@@ -1,5 +1,6 @@
 "use client";
 
+import { LastRefreshed } from "../components/LastRefreshed";
 import { useApp } from "../contexts/worldCupContext";
 import { players, teams } from "../data/pool";
 import { MoveLeft } from "lucide-react";
@@ -58,6 +59,9 @@ export function Standings(): React.ReactNode {
 						</div>
 					);
 				})}
+			</div>
+			<div>
+				<LastRefreshed />
 			</div>
 		</section>
 	);

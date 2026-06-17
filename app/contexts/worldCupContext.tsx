@@ -8,16 +8,18 @@ interface AppContextvalue {
 	selectedPlayerId: string | null;
 	setSelectedPlayerId: (playerId: string) => void;
 	isPlayerLoading: boolean;
+	lastRefreshed: string;
 }
 
 const AppContext = createContext<AppContextvalue | null>(null);
 
 interface AppProviderProps {
 	standings: ApiTeamStanding[];
+	lastRefreshed: string;
 	children: React.ReactNode;
 }
 
-export function AppProvider({ standings, children }: AppProviderProps) {
+export function AppProvider({ standings, lastRefreshed, children }: AppProviderProps) {
 	const [selectedPlayerId, setSelectedPlayerIdState] = useState<string | null>(null);
 	const [isPlayerLoading, setIsPlayerLoading] = useState<boolean>(true);
 
@@ -32,7 +34,7 @@ export function AppProvider({ standings, children }: AppProviderProps) {
 	}
 
 	return (
-		<AppContext.Provider value={{standings, selectedPlayerId, setSelectedPlayerId, isPlayerLoading}} >
+		<AppContext.Provider value={{standings, selectedPlayerId, setSelectedPlayerId, isPlayerLoading, lastRefreshed}} >
 			{children}
 		</AppContext.Provider>
 	);
