@@ -17,9 +17,17 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "World Cup Fantasy",
-  description: "Fantasy App For 2026 World Cup",
+export const metadata = {
+	title: "World Cup Fantasy",
+	description: "Fantasy World Cup pool tracker",
+	appleWebApp: {
+		capable: true,
+		title: "World Cup Fantasy",
+		statusBarStyle: "black-translucent",
+	},
+	icons: {
+		apple: "/apple-touch-icon.png",
+	},
 };
 
 export default async function RootLayout({
