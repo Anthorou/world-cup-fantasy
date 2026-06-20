@@ -2,13 +2,25 @@ import { Match } from "@/app/types/pool";
 import { unstable_cache } from "next/cache";
 import { NextResponse } from "next/server";
 
+const TIMEZONE = "America/Toronto";
+
 function formatDate(date: Date): string {
-	return date.toLocaleDateString("en-CA");
+	const parts = new Intl.DateTimeFormat("en-CA", {
+		timeZone: TIMEZONE,
+		year: "numeric",
+		month: "2-digit",
+		day: "2-digit",
+	}).formatToParts(date);
+
+	const year = parts.find(part => part.type === "year")?.value;
+	const month = parts.find(part => part.type === "month")?.value;
+	const day = parts.find(part => part.type === "day")?.value;
+
+	return `${year}-${month}-${day}`;
 }
 
 const getWorldCupFixtures = unstable_cache(
 	async () => {
-		const TIMEZONE = "America/Toronto";
 		const today = new Date();
 		const tomorrow = new Date();
 
@@ -49,7 +61,7 @@ const getWorldCupFixtures = unstable_cache(
 			fetchedAt: new Date().toISOString(),
 		}
 	},
-	["world-cup-fantasy"],
+	["world-cup-fixtures"],
 	{
 		revalidate: 900,
 	}
