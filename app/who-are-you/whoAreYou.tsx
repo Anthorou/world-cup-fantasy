@@ -10,7 +10,7 @@ export function WhoAreYou(): React.ReactNode {
 
 	function selectPlayer(playerId: string) {
 		setSelectedPlayerId(playerId);
-		router.push("/my-teams");
+		router.push("/");
 	}
 
 	return (

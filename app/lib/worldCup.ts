@@ -23,7 +23,7 @@ export const getWorldCupStandings = unstable_cache(
             "https://v3.football.api-sports.io/standings?league=1&season=2026",
             {
                 headers: {
-                    "x-apisports-key": process.env.API_FOOTBALL_KEY ?? "",
+                    "x-apisports-key": process.env.API_FOOTBALL_KEY!,
                 },
                 cache: "no-store",
             }

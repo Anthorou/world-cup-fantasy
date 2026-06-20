@@ -20,3 +20,22 @@ export interface ApiTeamStanding {
     draws: number;
     losses: number;
 }
+
+export interface Match {
+	id: number;
+	date: string;
+	elapsed: number | null;
+	statusShort: string;
+	home: {
+		id: number;
+		name: string;
+		logo: string;
+		score: number | null;
+	};
+	away: {
+		id: number;
+		name: string;
+		logo: string;
+		score: number | null;
+	};
+}
