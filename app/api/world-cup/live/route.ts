@@ -19,6 +19,7 @@ export async function GET() {
 		date: match.fixture.date,
 		elapsed: match.fixture.status.elapsed,
 		statusShort: match.fixture.status.short,
+		statusLong: match.fixture.status.long,
 		home: {
 			id: match.teams.home.id,
 			name: match.teams.home.name,

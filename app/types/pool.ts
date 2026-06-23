@@ -26,6 +26,7 @@ export interface Match {
 	date: string;
 	elapsed: number | null;
 	statusShort: string;
+	statusLong: string;
 	home: {
 		id: number;
 		name: string;

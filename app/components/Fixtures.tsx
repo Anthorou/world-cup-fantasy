@@ -16,6 +16,52 @@ function isLive(macth: Match): boolean {
 	return !["NS", "FT"].includes(macth.statusShort);
 }
 
+function getMatchStatusText(match: Match): string {
+	if (match.statusShort === "HT") {
+		return "HT";
+	}
+
+	if (match.statusShort === "INT") {
+		return "Interrupted";
+	}
+
+	if (match.statusShort === "SUSP") {
+		return "Suspended";
+	}
+
+	if (isLive(match)) {
+		return match.elapsed != null ? `${match.elapsed}'` : match.statusShort;
+	}
+
+	if (match.statusShort === "FT") {
+		return "Final";
+	}
+
+	return formatMatchTime(match.date);
+}
+
+function shouldPollLive(match: Match): boolean {
+	if (["INT", "SUSP", "PST"].includes(match.statusShort)) {
+		return false;
+	}
+
+	const now = Date.now();
+	const kickoff = new Date(match.date).getTime();
+
+	return (
+		now >= kickoff - 30 * 1000 &&
+		now <= kickoff + 2 * 60 * 60 * 1000
+	);
+}
+
+function isInterrupted(match: Match): boolean {
+	return ["INT", "SUSP", "PST"].includes(match.statusShort);
+}
+
+function isActivelyPlaying(match: Match): boolean {
+	return ["1H", "2H", "ET", "BT", "P"].includes(match.statusShort);
+}
+
 function sortMatches(a: Match, b: Match): number {
 	if (isLive(a) && !isLive(b)) {
 		return -1;
@@ -71,16 +117,7 @@ export default function Fixtures(): React.ReactNode {
 		}
 
 		function shouldCheckLive(fixtures: Match[]): boolean {
-			const now = Date.now();
-
-			return fixtures.some(match => {
-				const kickoff = new Date(match.date).getTime();
-
-				return (
-					now >= kickoff - 30 * 1000 &&
-					now <= kickoff + 2 * 60 * 60 * 1000
-				);
-			});
+			return fixtures.some(shouldPollLive);
 		}
 
 		async function refresh() {
@@ -161,11 +198,7 @@ function renderMatches(title: string, matches: Match[]) {
 				const isFinished = match.statusShort === "FT";
 				const live = isLive(match);
 
-				const centerText = live
-					? match.statusShort === "HT" ? "HT" : `${match.elapsed}'`
-					: isFinished
-						? "Final"
-						: formatMatchTime(match.date);
+				const centerText = getMatchStatusText(match);
 
 				const homeOwnership = teams.find(team => team.id === match.home.id);
 				const awayOwnership = teams.find(team => team.id === match.away.id);
@@ -186,11 +219,17 @@ function renderMatches(title: string, matches: Match[]) {
 							<p className="text-3xl font-bold">{live || isFinished ? match.home.score : "-"}</p>
 
 							<div className="w-20 text-center">
-								<p className={`text-sm font-semibold ${live ? "text-emerald-400" : "text-slate-400"}`}>
+								<p className={`text-sm font-semibold ${
+									isInterrupted(match)
+										? "text-red-400"
+										: live
+											? "text-emerald-400"
+											: "text-slate-400"
+								}`}>
 									{centerText}
 								</p>
 
-								{live && (
+								{isActivelyPlaying(match) && (
 									<div className="flex justify-center">
 										<div className="h-1 w-14 overflow-hidden rounded-full bg-emerald-400/20">
 											<div className="h-full w-1/2 animate-live-bar rounded-full bg-emerald-400" />
@@ -236,11 +275,17 @@ function renderMatches(title: string, matches: Match[]) {
 
 							<div className="flex border-l border-white/10 pl-4">
 								<div className="flex w-14 flex-col items-center justify-center gap-1">
-									<p className={`text-sm font-semibold ${live ? "text-emerald-400" : "text-slate-400"}`}>
+								<p className={`text-sm font-semibold ${
+									isInterrupted(match)
+										? "text-red-400"
+										: live
+											? "text-emerald-400"
+											: "text-slate-400"
+									}`}>
 										{centerText}
 									</p>
 
-									{live && (
+									{isActivelyPlaying(match) && (
 										<div className="flex justify-center">
 											<div className="h-1 w-14 overflow-hidden rounded-full bg-emerald-400/20">
 												<div className="h-full w-1/2 animate-live-bar rounded-full bg-emerald-400" />
