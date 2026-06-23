@@ -8,12 +8,17 @@ export function AppShell({ children }: { children: React.ReactNode }): React.Rea
 	const pathname = usePathname();
 	const hideNavBar = pathname === "/who-are-you";
 
-	return (<>
-		{!hideNavBar && <NavBar />}
+	return (
+		<div className="flex h-screen flex-col overflow-hidden">
+			{!hideNavBar && <NavBar />}
 
-		<main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
-			<PullToRefresh />
-			{children}
-		</main>
-	</>);
+			<main
+				id="app-scroll-container"
+				className="mx-auto w-full max-w-6xl flex-1 overflow-y-auto px-4 py-6"
+			>
+				<PullToRefresh />
+				{children}
+			</main>
+		</div>
+	);
 }

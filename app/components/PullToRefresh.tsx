@@ -9,14 +9,24 @@ export default function PullToRefresh(): React.ReactNode {
 	const [pulling, setPulling] = useState(false);
 
 	useEffect(() => {
+		function getScrollContainer() {
+			return document.getElementById("app-scroll-container");
+		}
+
+		function isAtTop(): boolean {
+			const scrollContainer = getScrollContainer();
+
+			return scrollContainer?.scrollTop === 0;
+		}
+
 		function onTouchStart(event: TouchEvent) {
-			if (window.scrollY === 0) {
+			if (isAtTop()) {
 				startY.current = event.touches[0].clientY;
 			}
 		}
 
 		function onTouchMove(event: TouchEvent) {
-			if (startY.current == null || window.scrollY !== 0) {
+			if (startY.current == null || !isAtTop()) {
 				return;
 			}
 
@@ -43,19 +53,21 @@ export default function PullToRefresh(): React.ReactNode {
 			}
 		}
 
-		window.addEventListener("touchstart", onTouchStart, { passive: true });
-		window.addEventListener("touchmove", onTouchMove, { passive: false });
-		window.addEventListener("touchend", onTouchEnd);
+		const scrollContainer = getScrollContainer();
+
+		scrollContainer?.addEventListener("touchstart", onTouchStart, { passive: true });
+		scrollContainer?.addEventListener("touchmove", onTouchMove, { passive: false });
+		scrollContainer?.addEventListener("touchend", onTouchEnd);
 
 		return () => {
-			window.removeEventListener("touchstart", onTouchStart);
-			window.removeEventListener("touchmove", onTouchMove);
-			window.removeEventListener("touchend", onTouchEnd);
+			scrollContainer?.removeEventListener("touchstart", onTouchStart);
+			scrollContainer?.removeEventListener("touchmove", onTouchMove);
+			scrollContainer?.removeEventListener("touchend", onTouchEnd);
 		};
 	}, []);
 
 	return pulling ? (
-		<div className="fixed left-1/2 top-4 z-50 -translate-x-1/2 rounded-full border border-white/10 bg-slate-900 px-3 py-1 text-xs text-slate-200 shadow-lg">
+		<div className="fixed left-1/2 top-20 z-50 -translate-x-1/2 rounded-full border border-white/10 bg-slate-900 px-3 py-1 text-xs text-slate-200 shadow-lg">
 			Release to refresh
 		</div>
 	) : null;
