@@ -3,7 +3,7 @@
 import { LastRefreshed } from "../components/LastRefreshed";
 import { useApp } from "../contexts/worldCupContext";
 import { players, teams } from "../data/pool";
-import { MoveLeft } from "lucide-react";
+import { MoveLeft, RefreshCw } from "lucide-react";
 
 export function Standings(): React.ReactNode {
 	const { standings, selectedPlayerId } = useApp();
@@ -27,9 +27,17 @@ export function Standings(): React.ReactNode {
 
 	return (
 		<section className="space-y-6">
-			<div>
-                <h1 className="text-3xl font-bold">Pool Standings</h1>
-            </div>
+			<div className="flex items-center justify-between">
+				<h1 className="text-3xl font-bold">Pool Standings</h1>
+
+				<button
+					onClick={() => window.location.reload()}
+					className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
+					aria-label="Refresh"
+				>
+					<RefreshCw className="h-5 w-5" />
+				</button>
+			</div>
 			<div className="space-y-3">
 				{fantasyStandings.map((player, index) => {
 					const isCurrentPlayer = player.playerId == selectedPlayerId;
