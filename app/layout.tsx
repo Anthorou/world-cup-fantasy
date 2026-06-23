@@ -1,11 +1,10 @@
-import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { NavBar } from "./components/NavBar";
 import { flattenStandings, getWorldCupStandings } from "./lib/worldCup";
 import { AppProvider } from "./contexts/worldCupContext";
 import { RequirePlayer } from "./components/RequirePlayer";
 import { AppShell } from "./components/AppShell";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -50,6 +49,8 @@ export default async function RootLayout({
             <RequirePlayer>{children}</RequirePlayer>
           </AppShell>
         </AppProvider>
+
+        <Analytics />
       </body>
     </html>
   );
