@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Trophy, Users, TableProperties, User } from "lucide-react";
+import { Trophy, Users, TableProperties, Network } from "lucide-react";
 import { useApp } from "../contexts/worldCupContext";
 import { players } from "../data/pool";
 
@@ -10,6 +10,7 @@ const links = [
 	{ href: "/standings", mobileLabel: "Pool", label: "Pool Standings", icon: Trophy},
 	{ href: "/my-teams", mobileLabel: "Teams", label: "My Teams", icon: Users},
 	{ href: "/groups", mobileLabel: "Groups", label: "Groups Standings", icon: TableProperties},
+	{ href: "/knockouts", mobileLabel: "KO", label: "Knockouts", icon: Network },
 ]
 
 export function NavBar(): React.ReactNode {
@@ -24,7 +25,7 @@ export function NavBar(): React.ReactNode {
 				<Link href="/" className="whitespace-nowrap text-lg font-bold">
 					{"[ World Cup Fantasy ]"}
 				</Link>
-				<div className="col-span-2 grid grid-cols-3 gap-2 md:col-span-1 md:col-start-2 md:gap-4">
+				<div className="col-span-2 grid grid-cols-4 gap-2 md:col-span-1 md:col-start-2 md:gap-4">
 					{links.map(link => {
 						const isActive = pathname === link.href;
 						const Icon = link.icon;
