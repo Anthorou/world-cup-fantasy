@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import { KnockoutMatch, KnockoutResponse } from "../types/pool";
 import { players, teams } from "../data/pool";
 import { RefreshCw, Crown } from "lucide-react";
+import { LastRefreshed } from "../components/LastRefreshed";
 
 export function Knockouts(): React.ReactNode {
 	const [matches, setMatches] = useState<KnockoutMatch[]>([]);
+	const [fetchedAt, setFetchedAt] = useState<string>("");
 
 	useEffect(() => {
 		let mounted = true;
@@ -20,6 +22,7 @@ export function Knockouts(): React.ReactNode {
 			}
 	
 			setMatches(result.matches);
+			setFetchedAt(result.fetchedAt);
 		}
 	
 		loadKnockout();
@@ -97,6 +100,11 @@ export function Knockouts(): React.ReactNode {
 					<BracketTeam />
 				</div>
 			</div>
+			{fetchedAt && (
+				<div>
+					<LastRefreshed lastRefreshed={fetchedAt} />
+				</div>
+			)}
 		</section>
 	);
 }

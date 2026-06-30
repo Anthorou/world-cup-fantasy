@@ -1,20 +1,123 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { LastRefreshed } from "../components/LastRefreshed";
 import { useApp } from "../contexts/worldCupContext";
 import { teams } from "../data/pool";
+import { KnockoutMatch, KnockoutResponse } from "../types/pool";
 import { RefreshCw } from "lucide-react";
+
+function getKnockoutWinPoints(round: string): number {
+	switch (round) {
+		case "Round of 32":
+			return 4;
+		case "Round of 16":
+			return 8;
+		case "Quarter-finals":
+			return 12;
+		case "Semi-finals":
+			return 16;
+		case "Final":
+			return 20;
+		default:
+			return 0;
+	}
+}
 
 export function MyTeams(): React.ReactNode {
 	const { standings, selectedPlayerId } = useApp();
 
+	const [knockoutMatches, setKnockoutMatches] = useState<KnockoutMatch[]>([]);
+	const [knockoutLoaded, setKnockoutLoaded] = useState(false);
+
+	useEffect(() => {
+		let mounted = true;
+
+		async function loadKnockout() {
+			const response = await fetch("/api/world-cup/knockout");
+			const result: KnockoutResponse = await response.json();
+
+			if (!mounted) return;
+
+			setKnockoutMatches(result.matches);
+			setKnockoutLoaded(true);
+		}
+
+		loadKnockout();
+
+		return () => {
+			mounted = false;
+		};
+	}, []);
+
+	const qualifiedTeamIds = new Set(
+		knockoutMatches
+			.filter(match => match.round === "Round of 32")
+			.flatMap(match => [match.home.id, match.away.id])
+	);
+
+	const knockoutWinPointsByTeamId = new Map<number, number>();
+
+	for (const match of knockoutMatches) {
+		const points = getKnockoutWinPoints(match.round);
+
+		if (points === 0) continue;
+
+		if (match.home.winner) {
+			knockoutWinPointsByTeamId.set(
+				match.home.id,
+				(knockoutWinPointsByTeamId.get(match.home.id) ?? 0) + points
+			);
+		}
+
+		if (match.away.winner) {
+			knockoutWinPointsByTeamId.set(
+				match.away.id,
+				(knockoutWinPointsByTeamId.get(match.away.id) ?? 0) + points
+			);
+		}
+	}
+
 	const myTeams = teams
 		.filter(team => team.ownerId == selectedPlayerId)
-		.map(team => standings.find(item => item.teamId == team.id))
-		.filter(team => team != null)
-		.sort((a, b) => b.points - a.points);
+		.map(team => {
+			const standing = standings.find(item => item.teamId == team.id);
 
-	const totalPoints = myTeams.reduce((sum, team) => sum + (team.points ?? 0), 0);
+			if (!standing) {
+				return null;
+			}
+
+			const groupStagePoints = standing.points ?? 0;
+			const qualificationPoints = qualifiedTeamIds.has(team.id) ? 1 : 0;
+			const groupWinnerPoints = standing.rank === 1 ? 1 : 0;
+			const knockoutPoints = knockoutWinPointsByTeamId.get(team.id) ?? 0;
+			const totalPoints = groupStagePoints + qualificationPoints + groupWinnerPoints + knockoutPoints;
+
+			return {
+				...standing,
+				groupStagePoints,
+				qualificationPoints,
+				groupWinnerPoints,
+				knockoutPoints,
+				totalPoints,
+			};
+		})
+		.filter(team => team != null)
+		.sort((a, b) => b.totalPoints - a.totalPoints);
+
+	const totalPoints = myTeams.reduce((sum, team) => sum + team.totalPoints, 0);
+
+	if (!knockoutLoaded) {
+		return (
+			<section className="space-y-6">
+				<div className="flex items-center justify-between">
+					<h1 className="text-3xl font-bold">My Teams</h1>
+				</div>
+
+				<p className="text-sm text-slate-400">Loading teams...</p>
+			</section>
+		);
+	}
 
 	return (
 		<section className="space-y-6">
@@ -29,10 +132,12 @@ export function MyTeams(): React.ReactNode {
 					<RefreshCw className="h-5 w-5" />
 				</button>
 			</div>
+
 			<div className="rounded-xl border border-white/10 bg-slate-900 p-5">
-                <p className="text-sm text-slate-400">Total Points</p>
-                <p className="mt-1 text-3xl font-bold">{totalPoints} pts</p>
-            </div>
+				<p className="text-sm text-slate-400">Total Points</p>
+				<p className="mt-1 text-3xl font-bold">{totalPoints} pts</p>
+			</div>
+
 			<div className="grid gap-3 md:grid-cols-2">
 				{myTeams.map(team => (
 					<div key={team.teamId} className="rounded-xl border border-white/10 bg-slate-900 p-4">
@@ -46,9 +151,10 @@ export function MyTeams(): React.ReactNode {
 									</p>
 								</div>
 							</div>
+
 							<div className="text-right">
-								<div className="font-bold text-lg">
-									{team.points} pts
+								<div className="text-lg font-bold">
+									{team.totalPoints} pts
 								</div>
 
 								<div className="text-sm text-slate-400">
@@ -59,6 +165,7 @@ export function MyTeams(): React.ReactNode {
 					</div>
 				))}
 			</div>
+
 			<div>
 				<LastRefreshed />
 			</div>
