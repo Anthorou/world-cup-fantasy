@@ -111,32 +111,32 @@ export function Knockouts(): React.ReactNode {
 
 function BracketMatch({ match }: { match?: KnockoutMatch }): React.ReactNode {
 	const homeOwnership = teams.find(team => team.id === match?.home.id);
-const awayOwnership = teams.find(team => team.id === match?.away.id);
+	const awayOwnership = teams.find(team => team.id === match?.away.id);
 
-const homePlayer = players.find(player => player.id === homeOwnership?.ownerId);
-const awayPlayer = players.find(player => player.id === awayOwnership?.ownerId);
+	const homePlayer = players.find(player => player.id === homeOwnership?.ownerId);
+	const awayPlayer = players.find(player => player.id === awayOwnership?.ownerId);
 
-return (
-	<div className="rounded-lg border border-white/10 bg-slate-900 p-2">
-		<BracketTeam
-			name={match?.home.name ?? "TBD"}
-			logo={match?.home.logo}
-			score={match?.home.score ?? null}
-			winner={match?.home.winner ?? false}
-			playerAvatar={homePlayer?.avatar}
-		/>
+	return (
+		<div className="rounded-lg border border-white/10 bg-slate-900 p-2">
+			<BracketTeam
+				name={match?.home.name ?? "TBD"}
+				logo={match?.home.logo}
+				score={match?.home.score ?? null}
+				winner={match?.home.winner ?? false}
+				playerAvatar={homePlayer?.avatar}
+			/>
 
-		<div className="my-1 border-t border-white/10" />
+			<div className="my-1 border-t border-white/10" />
 
-		<BracketTeam
-			name={match?.away.name ?? "TBD"}
-			logo={match?.away.logo}
-			score={match?.away.score ?? null}
-			winner={match?.away.winner ?? false}
-			playerAvatar={awayPlayer?.avatar}
-		/>
-	</div>
-);
+			<BracketTeam
+				name={match?.away.name ?? "TBD"}
+				logo={match?.away.logo}
+				score={match?.away.score ?? null}
+				winner={match?.away.winner ?? false}
+				playerAvatar={awayPlayer?.avatar}
+			/>
+		</div>
+	);
 }
 
 function BracketTeam({ name = "TBD", logo = null, score = null, winner = false, playerAvatar }: {
@@ -188,16 +188,13 @@ function BracketTeam({ name = "TBD", logo = null, score = null, winner = false, 
 	);
 }
 
-function RoundSection({
-	title,
-	matches,
-	placeholderCount,
-}: {
+function RoundSection({ title, matches, placeholderCount }: {
 	title: string;
 	matches: KnockoutMatch[];
 	placeholderCount: number;
 }): React.ReactNode {
 	const hasMatches = matches.length > 0;
+	const nbPlaceholder = placeholderCount - matches.length;
 
 	return (
 		<section className="space-y-3">
@@ -206,18 +203,21 @@ function RoundSection({
 			</h2>
 
 			<div className="grid gap-2">
-				{hasMatches
-					? matches.map(match => (
-							<BracketMatch
-								key={match.id}
-								match={match}
-							/>
-						))
-					: Array.from({ length: placeholderCount }).map((_, index) => (
-							<BracketMatch
-								key={index}
-							/>
-						))}
+				{hasMatches &&
+					matches.map(match => (
+						<BracketMatch
+							key={match.id}
+							match={match}
+						/>
+					))
+				}
+				{
+					Array.from({ length: nbPlaceholder }).map((_, index) => (
+						<BracketMatch
+							key={index}
+						/>
+					))
+				}
 			</div>
 		</section>
 	);
