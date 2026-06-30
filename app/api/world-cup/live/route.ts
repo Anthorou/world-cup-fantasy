@@ -25,12 +25,14 @@ export async function GET() {
 			name: match.teams.home.name,
 			logo: match.teams.home.logo,
 			score: match.goals.home,
+			winner: match.teams.home.winner,
 		},
 		away: {
 			id: match.teams.away.id,
 			name: match.teams.away.name,
 			logo: match.teams.away.logo,
 			score: match.goals.away,
+			winner: match.teams.away.winner,
 		},
 	}));
 

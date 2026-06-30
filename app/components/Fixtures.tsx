@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Match } from "../types/pool";
 import { players, teams } from "../data/pool";
 import { MatchDetails } from "./MatchDetails";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Crown } from "lucide-react";
 
 function formatMatchTime(date: string): string {
 	return new Date(date).toLocaleTimeString("en-CA", {
@@ -21,7 +21,7 @@ function isTodayMatch(match: Match, today: string): boolean {
 }
 
 function isLive(match: Match): boolean {
-	return !["NS", "FT"].includes(match.statusShort);
+	return !["NS", "FT", "PEN"].includes(match.statusShort);
 }
 
 function getMatchStatusText(match: Match): string {
@@ -33,7 +33,9 @@ function getMatchStatusText(match: Match): string {
 		return match.elapsed != null ? `${match.elapsed}'` : match.statusShort;
 	}
 
-	if (match.statusShort === "FT") return "Final";
+	if (["FT", "PEN"].includes(match.statusShort)) {
+		return "Final";
+	}
 
 	return formatMatchTime(match.date);
 }
@@ -192,7 +194,7 @@ function renderMatches(
 			<h3 className="text-sm font-semibold text-slate-400">{title}</h3>
 
 			{matches.map(match => {
-				const isFinished = match.statusShort === "FT";
+				const isFinished = ["FT", "PEN"].includes(match.statusShort);
 				const live = isLive(match);
 				const centerText = getMatchStatusText(match);
 				const isExpanded = expandedMatchId === match.id;
@@ -238,6 +240,9 @@ function renderMatches(
 										className="h-8 w-8 shrink-0 object-contain"
 									/>
 									<p className="truncate font-semibold">{match.home.name}</p>
+									{match.home.winner && (
+										<Crown size={14} className="shrink-0 fill-amber-400 text-amber-400" />
+									)}
 								</div>
 
 								<p className="text-3xl font-bold">
@@ -269,6 +274,9 @@ function renderMatches(
 								</p>
 
 								<div className="flex min-w-0 items-center justify-end gap-3">
+									{match.away.winner && (
+										<Crown size={14} className="shrink-0 fill-amber-400 text-amber-400" />
+									)}
 									<p className="truncate text-right font-semibold">{match.away.name}</p>
 									<img
 										src={match.away.logo}
@@ -303,6 +311,9 @@ function renderMatches(
 												className="h-9 w-9 shrink-0 object-contain"
 											/>
 											<p className="truncate text-lg font-semibold">{match.home.name}</p>
+											{match.home.winner && (
+												<Crown size={14} className="shrink-0 fill-amber-400 text-amber-400" />
+											)}
 										</div>
 
 										<p className="text-4xl font-bold">
@@ -327,6 +338,9 @@ function renderMatches(
 												className="h-9 w-9 shrink-0 object-contain"
 											/>
 											<p className="truncate text-lg font-semibold">{match.away.name}</p>
+											{match.away.winner && (
+												<Crown size={14} className="shrink-0 fill-amber-400 text-amber-400" />
+											)}
 										</div>
 
 										<p className="text-4xl font-bold">

@@ -32,12 +32,14 @@ export interface Match {
 		name: string;
 		logo: string;
 		score: number | null;
+		winner?: boolean | null;
 	};
 	away: {
 		id: number;
 		name: string;
 		logo: string;
 		score: number | null;
+		winner?: boolean | null;
 	};
 }
 
@@ -67,5 +69,15 @@ export interface TeamStats {
 export interface MatchDetailsData {
 	events: MatchEvent[];
 	statistics: TeamStats[];
+	fetchedAt: string;
+}
+
+export interface KnockoutMatch extends Match {
+	round: string;
+}
+
+export interface KnockoutResponse {
+	matches: KnockoutMatch[];
+	rounds: string[];
 	fetchedAt: string;
 }

@@ -1,9 +1,30 @@
-import { Match } from "@/app/types/pool";
+import { KnockoutMatch } from "@/app/types/pool";
 import { unstable_cache } from "next/cache";
 import { NextResponse } from "next/server";
 
-interface KnockoutMatch extends Match {
-	round: string;
+function mapFixtureToMatch(match: any): KnockoutMatch {
+	return {
+		id: match.fixture.id,
+		date: match.fixture.date,
+		elapsed: match.fixture.status.elapsed,
+		statusShort: match.fixture.status.short,
+		statusLong: match.fixture.status.long,
+		round: match.league.round,
+		home: {
+			id: match.teams.home.id,
+			name: match.teams.home.name,
+			logo: match.teams.home.logo,
+			score: match.goals.home,
+			winner: match.teams.home.winner,
+		},
+		away: {
+			id: match.teams.away.id,
+			name: match.teams.away.name,
+			logo: match.teams.away.logo,
+			score: match.goals.away,
+			winner: match.teams.away.winner,
+		},
+	};
 }
 
 const getWorldCupKnockout = unstable_cache(
@@ -25,34 +46,7 @@ const getWorldCupKnockout = unstable_cache(
 
 				return round != null && !round.toLowerCase().includes("group stage");
 			})
-			.map((match: any) => ({
-				id: match.fixture.id,
-				date: match.fixture.date,
-				elapsed: match.fixture.status.elapsed,
-				statusShort: match.fixture.status.short,
-				statusLong: match.fixture.status.long,
-				round: match.league.round,
-				home: {
-					id: match.teams.home.id,
-					name: match.teams.home.name,
-					logo: match.teams.home.logo,
-					score: match.goals.home,
-				},
-				away: {
-					id: match.teams.away.id,
-					name: match.teams.away.name,
-					logo: match.teams.away.logo,
-					score: match.goals.away,
-				},
-			}));
-
-		const qualifiedTeamIds = Array.from(
-			new Set(
-				matches.flatMap(match =>
-					[match.home.id, match.away.id].filter((id): id is number => id != null)
-				)
-			)
-		);
+			.map(mapFixtureToMatch);
 
 		const rounds = Array.from(
 			new Set(data.response.map((match: any) => match.league.round))
@@ -60,7 +54,6 @@ const getWorldCupKnockout = unstable_cache(
 
 		return {
 			matches,
-			qualifiedTeamIds,
 			rounds,
 			fetchedAt: new Date().toISOString(),
 		};
