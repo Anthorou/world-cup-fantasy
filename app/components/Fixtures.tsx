@@ -45,14 +45,21 @@ function getMatchStatusText(match: Match): string {
 }
 
 function shouldPollLive(match: Match): boolean {
-	if (["INT", "SUSP", "PST"].includes(match.statusShort)) {
+	if (["INT", "SUSP", "PST", "FT", "PEN"].includes(match.statusShort)) {
 		return false;
+	}
+
+	if (isLive(match)) {
+		return true;
 	}
 
 	const now = Date.now();
 	const kickoff = new Date(match.date).getTime();
 
-	return now >= kickoff - 30 * 1000 && now <= kickoff + 2 * 60 * 60 * 1000;
+	return (
+		now >= kickoff - 30 * 1000 &&
+		now <= kickoff + 4 * 60 * 60 * 1000
+	);
 }
 
 function isInterrupted(match: Match): boolean {

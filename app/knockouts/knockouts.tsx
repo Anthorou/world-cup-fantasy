@@ -5,6 +5,7 @@ import { KnockoutMatch, KnockoutResponse } from "../types/pool";
 import { players, teams } from "../data/pool";
 import { RefreshCw, Crown } from "lucide-react";
 import { LastRefreshed } from "../components/LastRefreshed";
+import { CircularBracket } from "../components/CircularBracket";
 
 export function Knockouts(): React.ReactNode {
 	const [matches, setMatches] = useState<KnockoutMatch[]>([]);
@@ -54,6 +55,8 @@ export function Knockouts(): React.ReactNode {
 					<RefreshCw className="h-5 w-5" />
 				</button>
 			</div>
+
+			<CircularBracket matches={matches} />
 
 			<div className="space-y-6">
 				<RoundSection
