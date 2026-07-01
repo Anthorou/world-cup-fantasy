@@ -5,7 +5,7 @@ import { LastRefreshed } from "../components/LastRefreshed";
 import { useApp } from "../contexts/worldCupContext";
 import { teams } from "../data/pool";
 import { KnockoutMatch, KnockoutResponse } from "../types/pool";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Skull } from "lucide-react";
 
 function getKnockoutWinPoints(round: string): number {
 	switch (round) {
@@ -22,6 +22,38 @@ function getKnockoutWinPoints(round: string): number {
 		default:
 			return 0;
 	}
+}
+
+function isFinal(match: KnockoutMatch): boolean {
+	return ["FT", "AET", "PEN"].includes(match.statusShort);
+}
+
+function isEliminated(teamId: number, knockoutMatches: KnockoutMatch[]): boolean {
+	const qualifiedTeamIds = new Set(
+		knockoutMatches
+			.filter(match => match.round === "Round of 32")
+			.flatMap(match => [match.home.id, match.away.id])
+	);
+
+	if (!qualifiedTeamIds.has(teamId)) {
+		return true;
+	}
+
+	const teamMatches = knockoutMatches
+		.filter(match => match.home.id === teamId || match.away.id === teamId)
+		.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+	const lastMatch = teamMatches[0];
+
+	if (!lastMatch || !isFinal(lastMatch)) {
+		return false;
+	}
+
+	if (lastMatch.home.id === teamId) {
+		return lastMatch.home.winner === false;
+	}
+
+	return lastMatch.away.winner === false;
 }
 
 export function MyTeams(): React.ReactNode {
@@ -63,14 +95,14 @@ export function MyTeams(): React.ReactNode {
 
 		if (points === 0) continue;
 
-		if (match.home.winner) {
+		if (isFinal(match) && match.home.winner) {
 			knockoutWinPointsByTeamId.set(
 				match.home.id,
 				(knockoutWinPointsByTeamId.get(match.home.id) ?? 0) + points
 			);
 		}
 
-		if (match.away.winner) {
+		if (isFinal(match) && match.away.winner) {
 			knockoutWinPointsByTeamId.set(
 				match.away.id,
 				(knockoutWinPointsByTeamId.get(match.away.id) ?? 0) + points
@@ -145,7 +177,13 @@ export function MyTeams(): React.ReactNode {
 							<div className="flex items-center gap-3">
 								<img src={team.logo} alt={team.teamName} className="h-9 w-9 object-contain" />
 								<div>
-									<h2 className="font-semibold">{team.teamName}</h2>
+									<div className="flex items-center gap-2">
+										<h2 className="font-semibold">{team.teamName}</h2>
+
+										{isEliminated(team.teamId, knockoutMatches) && (
+											<Skull className="h-4 w-4 text-red-400" />
+										)}
+									</div>
 									<p className="text-sm text-slate-400">
 										{team.group}
 									</p>

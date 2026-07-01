@@ -24,6 +24,10 @@ function isLive(match: Match): boolean {
 	return !["NS", "FT", "PEN"].includes(match.statusShort);
 }
 
+function isFinal(match: Match): boolean {
+	return ["FT", "AET", "PEN"].includes(match.statusShort);
+}
+
 function getMatchStatusText(match: Match): string {
 	if (match.statusShort === "HT") return "HT";
 	if (match.statusShort === "INT") return "Interrupted";
@@ -240,7 +244,7 @@ function renderMatches(
 										className="h-8 w-8 shrink-0 object-contain"
 									/>
 									<p className="truncate font-semibold">{match.home.name}</p>
-									{match.home.winner && (
+									{isFinal(match) && match.home.winner && (
 										<Crown size={14} className="shrink-0 fill-amber-400 text-amber-400" />
 									)}
 								</div>
@@ -274,7 +278,7 @@ function renderMatches(
 								</p>
 
 								<div className="flex min-w-0 items-center justify-end gap-3">
-									{match.away.winner && (
+									{isFinal(match) && match.away.winner && (
 										<Crown size={14} className="shrink-0 fill-amber-400 text-amber-400" />
 									)}
 									<p className="truncate text-right font-semibold">{match.away.name}</p>
@@ -311,7 +315,7 @@ function renderMatches(
 												className="h-9 w-9 shrink-0 object-contain"
 											/>
 											<p className="truncate text-lg font-semibold">{match.home.name}</p>
-											{match.home.winner && (
+											{isFinal(match) && match.home.winner && (
 												<Crown size={14} className="shrink-0 fill-amber-400 text-amber-400" />
 											)}
 										</div>
@@ -338,7 +342,7 @@ function renderMatches(
 												className="h-9 w-9 shrink-0 object-contain"
 											/>
 											<p className="truncate text-lg font-semibold">{match.away.name}</p>
-											{match.away.winner && (
+											{isFinal(match) && match.away.winner && (
 												<Crown size={14} className="shrink-0 fill-amber-400 text-amber-400" />
 											)}
 										</div>

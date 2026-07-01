@@ -34,6 +34,10 @@ function getKnockoutWinPoints(round: string): number {
 	}
 }
 
+function isFinal(match: KnockoutMatch): boolean {
+	return ["FT", "AET", "PEN"].includes(match.statusShort);
+}
+
 export function Standings(): React.ReactNode {
 	const { standings, selectedPlayerId } = useApp();
 
@@ -76,14 +80,14 @@ export function Standings(): React.ReactNode {
 			continue;
 		}
 	
-		if (match.home.winner) {
+		if (isFinal(match) && match.home.winner) {
 			knockoutWinPointsByTeamId.set(
 				match.home.id,
 				(knockoutWinPointsByTeamId.get(match.home.id) ?? 0) + points
 			);
 		}
 	
-		if (match.away.winner) {
+		if (isFinal(match) && match.away.winner) {
 			knockoutWinPointsByTeamId.set(
 				match.away.id,
 				(knockoutWinPointsByTeamId.get(match.away.id) ?? 0) + points

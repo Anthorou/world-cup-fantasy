@@ -109,6 +109,10 @@ export function Knockouts(): React.ReactNode {
 	);
 }
 
+function isFinal(match: KnockoutMatch): boolean {
+	return ["FT", "AET", "PEN"].includes(match.statusShort);
+}
+
 function BracketMatch({ match }: { match?: KnockoutMatch }): React.ReactNode {
 	const homeOwnership = teams.find(team => team.id === match?.home.id);
 	const awayOwnership = teams.find(team => team.id === match?.away.id);
@@ -122,7 +126,7 @@ function BracketMatch({ match }: { match?: KnockoutMatch }): React.ReactNode {
 				name={match?.home.name ?? "TBD"}
 				logo={match?.home.logo}
 				score={match?.home.score ?? null}
-				winner={match?.home.winner ?? false}
+				winner={match != null && isFinal(match) && match.home.winner === true}
 				playerAvatar={homePlayer?.avatar}
 			/>
 
@@ -132,7 +136,7 @@ function BracketMatch({ match }: { match?: KnockoutMatch }): React.ReactNode {
 				name={match?.away.name ?? "TBD"}
 				logo={match?.away.logo}
 				score={match?.away.score ?? null}
-				winner={match?.away.winner ?? false}
+				winner={match != null && isFinal(match) && match.away.winner === true}
 				playerAvatar={awayPlayer?.avatar}
 			/>
 		</div>
